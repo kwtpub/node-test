@@ -62,8 +62,42 @@ const appendFileAsync = async (path,data) => {
     }))
 }
 
-writeFileAsync(path.resolve(__dirname,  'text.txt'), 'data')
-    .then(() => appendFileAsync(path.resolve(__dirname, 'text.txt'), '123'))
-    .then(() => appendFileAsync(path.resolve(__dirname, 'text.txt'),'456'))
-    .then(() => appendFileAsync(path.resolve(__dirname, 'text.txt'),'789'))
-    .catch(err => console.log(err))
+const readFileAsync = async (path) => { 
+    return new Promise((resolve, rejects) => fs.readFile(path, {encoding: 'utf8'}, (err, data) => { 
+        if(err) {
+            return rejects(err.message)
+        } 
+        resolve(data)
+
+    }))
+}
+
+const removeFileAsync = async (path) => { 
+    return new Promise((resolve, rejects) => fs.rm(path, (err) => { 
+        if(err) {
+            return rejects(err.message)
+        } 
+        resolve()
+
+    }))
+}
+
+
+// writeFileAsync(path.resolve(__dirname,  'text.txt'), 'data')
+//     .then(() => appendFileAsync(path.resolve(__dirname, 'text.txt'), '123'))
+//     .then(() => appendFileAsync(path.resolve(__dirname, 'text.txt'),'456'))
+//     .then(() => appendFileAsync(path.resolve(__dirname, 'text.txt'),'789'))
+//     .then(() => readFileAsync(path.resolve(__dirname, 'text.txt'),'789'))
+//     .then(data => console.log(data))
+//     .catch(err => console.log(err))
+
+// removeFileAsync(path.resolve(__dirname, 'tes.txt'))
+//     .then(() => console.log('file was remove'))
+
+const text = process.env.TEXT || ''
+
+writeFileAsync(path.resolve(__dirname, 'text.txt'), text)
+    .then(() => readFileAsync(path.resolve(__dirname, 'text.txt')))
+    .then(data => data.split(' ').length)
+    .then( count => writeFileAsync(path.resolve(__dirname, 'count.txt'), `Кол-во слов ${count}`))
+    .then(() => removeFileAsync(path.resolve(__dirname, 'text.txt')))
